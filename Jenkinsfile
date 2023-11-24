@@ -40,7 +40,10 @@ pipeline {
         //TODO add a security scan for the image Trivy
         stage('Scan Docker Image') {
             steps {
-                sh 'echo : not implemented yet'
+                withSonarQubeEnv(installationName: 'sonar'){
+                    sh 'mvn sonar:sonar'
+                }
+                
             }
         }
 
