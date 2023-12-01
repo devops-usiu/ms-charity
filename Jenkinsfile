@@ -48,11 +48,14 @@ pipeline {
         }
 
 
-        stage('Push Image') {
-            steps {
-                sh 'echo : not implemented yet'
+        stage('Docker Push') {
+              steps {
+                withCredentials([usernamePassword(credentialsId: 'onekoech-docker-hub-credentials', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
+                    sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
+                  sh 'docker push onekoech/ms-devsecops-wit:dev-001'
+                }
+              }
             }
-        }
     }
 }
 
