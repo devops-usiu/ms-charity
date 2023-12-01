@@ -22,11 +22,18 @@ pipeline {
                  sh 'mvn -B -DskipTests clean package'
             }
         }
-        stage('Test') {
+
+
+        //TODO add a security scan for the image Trivy
+        stage('Scan Docker Image') {
             steps {
-                sh 'echo : not implemented yet'
+                withSonarQubeEnv(installationName: 'sonar'){
+                    sh 'mvn sonar:sonar'
+                }
+
             }
         }
+
 
         // Security Scan  - SAST
         // Security scan - SCA
@@ -34,18 +41,15 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                sh 'echo : not implemented yet'
+                version = BUILDVERSION();
+                commit = getCommit();
+                echo("The version : " + version + " Commit: " + commit)
+
+
+                sh 'docker build -t ms-devsecops-wit:dev-001 .'
             }
         }
-        //TODO add a security scan for the image Trivy
-        stage('Scan Docker Image') {
-            steps {
-                withSonarQubeEnv(installationName: 'sonar'){
-                    sh 'mvn sonar:sonar'
-                }
-                
-            }
-        }
+
 
         stage('Push Image') {
             steps {
