@@ -1,7 +1,5 @@
 pipeline {
 
-    def app
-
     agent any
     //disable concurrent build to avoid race conditions and to save resources
     options {
@@ -46,20 +44,15 @@ pipeline {
 
 
                 sh 'docker build -t ms-devsecops-wit:dev-001 .'
-                app = docker.build(owner + "/${image}","-f ./${dockerfile} .");
             }
         }
 
 
-        stage('Docker Push') {
-              steps {
-                docker.withRegistry('https://hub.docker.com/', 'onekoech-docker-hub-credentials') {
-                app.push("prod-${env.SHORT_COMMIT}-${env.BUILDVERSION}")
-                app.push("latest")
-
+        stage('Push Image') {
+            steps {
+                sh 'echo : not implemented yet'
             }
-              }
-            }
+        }
     }
 }
 
