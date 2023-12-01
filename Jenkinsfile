@@ -1,5 +1,7 @@
 pipeline {
 
+    def app
+
     agent any
     //disable concurrent build to avoid race conditions and to save resources
     options {
@@ -44,16 +46,18 @@ pipeline {
 
 
                 sh 'docker build -t ms-devsecops-wit:dev-001 .'
+                app = docker.build(owner + "/${image}","-f ./${dockerfile} .");
             }
         }
 
 
         stage('Docker Push') {
               steps {
-                withCredentials([usernamePassword(credentialsId: 'onekoech-docker-hub-credentials', passwordVariable: 'dockerHubPassword', usernameVariable: 'dockerHubUser')]) {
-                    sh "docker login -u ${env.dockerHubUser} -p ${env.dockerHubPassword}"
-                  sh 'docker push onekoech/ms-devsecops-wit:dev-001'
-                }
+                docker.withRegistry('https://hub.docker.com/', 'onekoech-docker-hub-credentials') {
+                app.push("prod-${env.SHORT_COMMIT}-${env.BUILDVERSION}")
+                app.push("latest")
+
+            }
               }
             }
     }
