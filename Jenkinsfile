@@ -41,9 +41,6 @@ pipeline {
 
         stage('Build Image') {
             steps {
-                version = BUILDVERSION();
-                commit = getCommit();
-                echo("The version : " + version + " Commit: " + commit)
 
 
                 sh 'docker build -t ms-devsecops-wit:dev-001 .'
