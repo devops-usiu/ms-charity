@@ -66,9 +66,9 @@ pipeline {
                     def dockerHubUser = credentials('cnnb01')
                     def dockerHubPassword = credentials('chacha011')
                     // For logging into Docker Hub
-                    sh "docker login -u ${dockerHubUser} -p ${dockerHubPassword}"
+                    sh 'docker login -u ${dockerHubUser} -p ${dockerHubPassword}'
                     // Push the Docker image to Docker Hub
-                    sh "docker push ${GIT_REPO_NAME}:v1-${GIT_COMMIT}-${TIMESTAMP}" 
+                    sh 'docker push ${GIT_REPO_NAME}:v1-${GIT_COMMIT}-${TIMESTAMP}' 
         }
     }
 }
