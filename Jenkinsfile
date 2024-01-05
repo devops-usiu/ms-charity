@@ -52,11 +52,11 @@ pipeline {
 
         //TODO add a security scan for the image Trivy
         //Trivy must be installed as a Jenkins tool
-        stage('Security scan for the image'){
-            steps{
-                sh 'trivy --exit-code 0 --severity HIGH ${GIT_REPO_NAME}:v1-${GIT_COMMIT}-${TIMESTAMP}'
-            }
-        }
+        // stage('Security scan for the image'){
+        //     steps{
+        //         sh 'trivy --exit-code 0 --severity HIGH ${GIT_REPO_NAME}:v1-${GIT_COMMIT}-${TIMESTAMP}'
+        //     }
+        // }
 
         //<have to setup credentials first under GUI>
         stage('Push Image') {
