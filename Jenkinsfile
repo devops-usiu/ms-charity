@@ -13,9 +13,16 @@ pipeline {
     }
     environment {
             GIT_REPO_NAME = determineRepoName()
+            GIT_COMMIT = getCommit()
+            TIMESTAMP = BUILDVERSION()
     }
     stages {
 
+        // stage('Clone Repository'){
+        //     steps{//PAT needed
+        //         git 'https://github.com/Cnnb01/${GIT_REPO_NAME}.git'
+        //     }
+        // }
 
         stage('Build') {
             steps {
@@ -23,8 +30,9 @@ pipeline {
             }
         }
 
+        //SONARSCANS
 
-        //TODO add a security scan for the image Trivy
+        //Performs a sonarscan on the docker image
         stage('Scan Docker Image') {
             steps {
                 withSonarQubeEnv(installationName: 'sonar'){
@@ -34,27 +42,41 @@ pipeline {
             }
         }
 
-
         // Security Scan  - SAST
         // Security scan - SCA
 
 
         stage('Build Image') {
             steps {
-
-
-                sh 'docker build -t ms-devsecops-wit:dev-001 .'
+                sh 'docker build -t ${GIT_REPO_NAME}:v1-${GIT_COMMIT}-${TIMESTAMP} .'//container_name:version
             }
         }
 
+        //TODO add a security scan for the image Trivy
+        //Trivy must be installed as a Jenkins tool
+        // stage('Security scan for the image'){
+        //     steps{
+        //         sh 'trivy --exit-code 0 --severity HIGH ${GIT_REPO_NAME}:v1-${GIT_COMMIT}-${TIMESTAMP}'
+        //     }
+        // }
 
+        //<have to setup credentials first under GUI>
         stage('Push Image') {
             steps {
-                sh 'echo : not implemented yet'
-            }
+                script {
+                    // define your Docker Hub credentials in the GUI as well
+                    def dockerHubUser = credentials('cnnb01')
+                    def dockerHubPassword = credentials('chacha011')
+                    // For logging into Docker Hub
+                    sh "docker login -u ${dockerHubUser} -p ${dockerHubPassword}"
+                    // Push the Docker image to Docker Hub
+                    sh "docker push ${GIT_REPO_NAME}:v1-${GIT_COMMIT}-${TIMESTAMP}" 
         }
     }
 }
+
+    }
+ }
 
 String determineRepoName() {
     return   GIT_URL.replaceFirst(/^.*\/([^\/]+?).git$/, '$1')
@@ -73,4 +95,4 @@ def BUILDVERSION(){
 def version(){
     pom = readMavenPom file: 'pom.xml'
     return pom.version
-}
+} 
