@@ -22,7 +22,7 @@ pipeline {
         //     steps{//PAT needed
         //         git 'https://github.com/Cnnb01/${GIT_REPO_NAME}.git'
         //     }
-        // }
+        // com}
 
         stage('Build') {
             steps {
